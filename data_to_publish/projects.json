@@ -1,27 +1,202 @@
 [
   {
-    "name": "Ethereum",
-    "description": "A decentralized, open-source blockchain platform with smart contract functionality. Ether (ETH) is the native cryptocurrency.",
-    "web_url": "https://ethereum.org",
-    "topics": ["Blockchain", "Smart Contracts"],
-    "avatar_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png",
+    "name": "ChatGPT",
+    "description": "ChatGPT is a conversational AI assistant developed by OpenAI.",
+    "web_url": "https://chat.openai.com",
+    "date_founded": "2025-03-01",
+    "topics": ["AI Tools"],
+    "avatar_url": "https://openai.com/brand/",
     "blocks": [
       "## Overview",
-      "Ethereum is a decentralized, open-source blockchain system that features smart contract functionality. It was proposed in 2013 by programmer **Vitalik Buterin** and development began in 2014, with the network going live on **July 30, 2015**.",
-      "Ether (ETH) is the native cryptocurrency of the platform. It is the second-largest cryptocurrency by market capitalization, after Bitcoin.",
-      "## Key Facts",
-      "- **Consensus:** Proof of Stake (since The Merge, Sept 2022)\n- **Block time:** ~12 seconds\n- **Smart contract languages:** Solidity, Vyper\n- **EVM:** Ethereum Virtual Machine — the runtime for smart contracts\n- **Major upgrades:** Frontier, Homestead, Metropolis, The Merge, Shanghai"
+      "ChatGPT is a general-purpose conversational AI tool from OpenAI.",
+      "## Details",
+      "- **Developers:** OpenAI",
+      "- **Website:** https://chat.openai.com",
+      "- **X:** https://x.com/OpenAI",
+      "- **Open source status:** Proprietary",
+      "- **Pricing models:** Free, Go, Plus, Pro, Business, Enterprise",
+      "- **Release date:** March 2025",
+      "- **Agents / models:** DALL-E"
     ]
   },
   {
-    "name": "Geo",
-    "description": "A decentralized knowledge graph protocol enabling collaborative, permissionless knowledge curation on the internet.",
-    "web_url": "https://geobrowser.io",
-    "topics": ["Blockchain", "Decentralized Knowledge Graphs"],
+    "name": "Gemini / Nano Banana",
+    "description": "Gemini Nano Banana is a Google Gemini series model optimized for on-device and lightweight AI experiences.",
+    "web_url": "https://gemini.google.com",
+    "date_founded": "2025-01-01",
+    "topics": ["AI Tools"],
+    "avatar_url": "https://pbs.twimg.com/profile_images/2027054251348779009/lGqDGXMO_400x400.jpg",
     "blocks": [
-      "## What is Geo?",
-      "Geo is a decentralized protocol for structuring and sharing knowledge on the internet. It combines a **knowledge graph** data model with **blockchain-based** governance to enable open, permissionless knowledge curation.",
-      "The protocol allows anyone to create, edit, and organize information as interconnected entities — each with typed properties, relations, and rich content blocks."
+      "## Overview",
+      "Gemini / Nano Banana is part of the Google Gemini family of AI tools.",
+      "## Details",
+      "- **Developers:** Google Gemini",
+      "- **Website:** https://gemini.google.com",
+      "- **X:** @NanoBanana",
+      "- **Open source status:** Proprietary",
+      "- **Pricing models:** Free; Pro/Ultra ($20/mo)",
+      "- **Release date:** 2025 (Nano Banana Series)",
+      "- **Agents / models:** Nano Banana Pro"
+    ]
+  },
+  {
+    "name": "Grok",
+    "description": "Grok is a conversational AI developed by xAI with tight integration into the X platform.",
+    "web_url": "http://grok.com/",
+    "date_founded": "2023-11-01",
+    "topics": ["AI Tools"],
+    "avatar_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Grok-feb-2025-logo.svg/1280px-Grok-feb-2025-logo.svg.png?_=20250226183559",
+    "blocks": [
+      "## Overview",
+      "Grok is an AI assistant built by xAI with access to real-time X data.",
+      "## Details",
+      "- **Developers:** xAI Corp",
+      "- **Website:** http://grok.com/",
+      "- **X:** @grok / @xai",
+      "- **Open source status:** Proprietary",
+      "- **Pricing models:** X Premium Subscription",
+      "- **Release date:** November 2023",
+      "- **Agents / models:** Grok-vision"
+    ]
+  },
+  {
+    "name": "Midjourney (V7)",
+    "description": "Midjourney V7 is a generative image model focused on artistic and stylistic outputs.",
+    "web_url": "https://www.midjourney.com",
+    "date_founded": "2026-02-01",
+    "topics": ["AI Tools"],
+    "avatar_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Midjourney_Emblem.svg/1920px-Midjourney_Emblem.svg.png",
+    "blocks": [
+      "## Overview",
+      "Midjourney V7 is the seventh major version of the Midjourney image-generation model.",
+      "## Details",
+      "- **Developers:** Midjourney Inc.",
+      "- **Website:** https://www.midjourney.com",
+      "- **X:** @midjourney",
+      "- **Open source status:** Proprietary",
+      "- **Pricing models:** $10 (Basic) to $120/mo (Mega)",
+      "- **Release date:** February 2026 (V7 Alpha)",
+      "- **Agents / models:** V7"
+    ]
+  },
+  {
+    "name": "Stable Diffusion",
+    "description": "Stable Diffusion is an open-source text-to-image diffusion model.",
+    "web_url": "https://stability.ai/stable-image",
+    "date_founded": "2022-08-22",
+    "topics": ["AI Tools"],
+    "avatar_url": "https://stablediffusionweb.com/images/logo.png",
+    "blocks": [
+      "## Overview",
+      "Stable Diffusion is an open-source diffusion model for generating images from text prompts.",
+      "## Details",
+      "- **Developers:** Stability AI",
+      "- **Website:** https://stability.ai/stable-image",
+      "- **X:** https://x.com/stabilityai",
+      "- **Open source status:** Open source",
+      "- **Pricing models:** Hosted Plan: Free, Pro, Max (20$ - 40$)",
+      "- **Release date:** August 22, 2022",
+      "- **Agents / models:** ComfyUI, DreamStudio"
+    ]
+  },
+  {
+    "name": "Adobe Firefly",
+    "description": "Adobe Firefly is a family of generative AI tools integrated into Adobe Creative Cloud.",
+    "web_url": "https://www.adobe.com/products/firefly.html",
+    "date_founded": "2023-01-01",
+    "topics": ["AI Tools"],
+    "avatar_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Adobe_Firefly_Logo.svg/1280px-Adobe_Firefly_Logo.svg.png?_=20250303041603",
+    "blocks": [
+      "## Overview",
+      "Adobe Firefly powers generative features across Adobe Creative Cloud apps.",
+      "## Details",
+      "- **Developers:** Adobe Inc",
+      "- **Website:** https://www.adobe.com/products/firefly.html",
+      "- **X:** https://twitter.com/AdobeFirefly",
+      "- **Open source status:** Proprietary",
+      "- **Pricing models:** Standard, Pro, and Premium ($9.99 - $199.99)",
+      "- **Release date:** 2023",
+      "- **Agents / models:** Adobe Creative Cloud tools"
+    ]
+  },
+  {
+    "name": "Microsoft Designer Copilot",
+    "description": "Microsoft Designer Copilot is an AI-assisted design tool integrated with Microsoft 365.",
+    "web_url": "https://designer.microsoft.com",
+    "date_founded": "2024-07-01",
+    "topics": ["AI Tools"],
+    "avatar_url": "https://res.public.onecdn.static.microsoft/designer/client/prod/static/media/designer-app-logo.c270ec3147032a913024e7fa63cff2aa.svg",
+    "blocks": [
+      "## Overview",
+      "Microsoft Designer Copilot helps users create visual designs with AI assistance.",
+      "## Details",
+      "- **Developers:** Microsoft",
+      "- **Website:** https://designer.microsoft.com",
+      "- **X:** https://x.com/MicrosoftDesign",
+      "- **Open source status:** Proprietary",
+      "- **Pricing models:** Microsoft 365 Copilot License ($20-30/mo)",
+      "- **Release date:** July 2024",
+      "- **Agents / models:** Agent 365"
+    ]
+  },
+  {
+    "name": "Leonardo.ai",
+    "description": "Leonardo.ai is a creative image-generation platform with APIs for developers.",
+    "web_url": "https://leonardo.ai",
+    "date_founded": "2023-01-01",
+    "topics": ["AI Tools"],
+    "avatar_url": "https://leonardo.ai/images/leonardo_wordmark.svg?dpl=dpl_4PtAV7NbdN34Z4qfLmoGBLeHNtUy",
+    "blocks": [
+      "## Overview",
+      "Leonardo.ai focuses on high-quality, stylized image generation for creators and developers.",
+      "## Details",
+      "- **Developers:** Leonardo Interactive",
+      "- **Website:** https://leonardo.ai",
+      "- **X:** @LeonardoAi",
+      "- **Open source status:** Proprietary",
+      "- **Pricing models:** Free Credits; Pro Plans; API-based Pricing",
+      "- **Release date:** 2023",
+      "- **Agents / models:** Creative Engine API"
+    ]
+  },
+  {
+    "name": "Flux",
+    "description": "Flux is a family of image-generation models from Black Forest Labs.",
+    "web_url": "https://fluximageai.com",
+    "date_founded": "2024-08-01",
+    "topics": ["AI Tools"],
+    "avatar_url": "https://bfl.ai/favicon.ico",
+    "blocks": [
+      "## Overview",
+      "Flux is an AI image-generation tool family created by Black Forest Labs.",
+      "## Details",
+      "- **Developers:** Black Forest Labs",
+      "- **Website:** https://fluximageai.com",
+      "- **X:** https://twitter.com/BlackForestLabs",
+      "- **Open source status:** Mixed",
+      "- **Pricing models:** Varies by platform",
+      "- **Release date:** August 2024",
+      "- **Agents / models:** Flux.1, Flux.2"
+    ]
+  },
+  {
+    "name": "Imagine Art",
+    "description": "Imagine Art is an AI image-generation platform for creative projects.",
+    "web_url": "https://www.imagine.art/ai-image-generator/",
+    "date_founded": "2024-01-01",
+    "topics": ["AI Tools"],
+    "avatar_url": "https://www.imagine.art/favicon.ico",
+    "blocks": [
+      "## Overview",
+      "Imagine Art provides AI-powered image generation tools for creators.",
+      "## Details",
+      "- **Developers:** Imagine",
+      "- **Website:** https://www.imagine.art/ai-image-generator/",
+      "- **X / social:** https://www.instagram.com/imagineartofficial",
+      "- **Open source status:** Proprietary",
+      "- **Pricing models:** Standard, Ultimate, Creator, Enterprise",
+      "- **Release date:** 2024",
+      "- **Agents / models:** Seedream, Flux, Ideogram"
     ]
   }
 ]

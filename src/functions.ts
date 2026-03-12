@@ -202,6 +202,10 @@ export function printOps(ops: any, outputDir: string, fn: string) {
   console.log("NUMBER OF OPS: ", ops.length);
 
   if (ops.length > 0) {
+    // Ensure output directory exists before writing
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
     const convertedOps = convertUuidBytes(ops);
     const outputText = JSON.stringify(convertedOps, null, 2);
     const filePath = path.join(outputDir, fn);
