@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "publish-demo": "bun run demo_publish.ts",
-    "api-demo": "bun run demo_api.ts"
+    "publish-demo": "bun run 02_publish_demo.ts",
+    "api-demo": "bun run 01_api_demo.ts",
+    "delete-demo": "bun run 03_delete_demo.ts"
   },
   "dependencies": {
-    "@geoprotocol/geo-sdk": "^0.10.1",
+    "@geoprotocol/geo-sdk": "^0.19.0",
     "dotenv": "^17.2.4",
     "viem": "^2.45.3"
   },

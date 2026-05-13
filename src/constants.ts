@@ -5,7 +5,18 @@
  * See knowledge-graph-ontology.md for the full registry.
  */
 
-export const ROOT_SPACE_ID = "a19c345ab9866679b001d7d2138d88a1";
+// The canonical Root space — verified against SystemIds.ROOT_SPACE_ID in the SDK source.
+export const ROOT_SPACE_ID = "08c4f09378584b7c9b94b82e448abcff";
+
+// The AI knowledge graph space (previously mis-labelled as ROOT_SPACE_ID).
+export const AI_SPACE_ID = "a19c345ab9866679b001d7d2138d88a1";
+
+/**
+ * Namespace prefix used to derive deterministic entity IDs via derivedUuidFromString.
+ * Change this when publishing a different bounty so IDs stay isolated.
+ * Format: "<project-slug>:<entity-type>:<entity-name>"
+ */
+export const ID_NAMESPACE = "geo-image-ai-models";
 
 // ─── Type IDs ────────────────────────────────────────────────────────────────
 

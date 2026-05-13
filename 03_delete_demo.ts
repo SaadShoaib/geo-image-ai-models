@@ -1,78 +1,81 @@
+/**
+ * Geo SDK Demo — Deleting All Published Demo Entities
+ *
+ * Reads the entity IDs that were published by 02_publish_demo.ts and
+ * deletes each one by querying its current live state from the API, then
+ * building and submitting the necessary delete ops.
+ *
+ * This approach is correct and robust because it reads ground-truth from
+ * the chain rather than trying to parse the local ops file.
+ *
+ * Usage:
+ *   bun run 03_delete_demo.ts
+ *
+ * Prerequisites:
+ *   - Run 02_publish_demo.ts first so data_to_delete/demo_publish_ops.json exists
+ *   - Set DEMO_SPACE_ID and PK_SW in .env
+ */
+
 import fs from 'fs';
 import path from 'path';
-import { Graph, type Op } from '@geoprotocol/geo-sdk';
-import { printOps, publishOps } from './src/functions';
+import dotenv from 'dotenv';
+import { deleteEntity } from './04_delete_entity.ts';
 
-function readOpsFromFile(dir_in: string, fn: string): any {
-  const filePath = path.join(dir_in, fn);
+dotenv.config();
 
-  if (!fs.existsSync(filePath)) {
-    console.error(`File ${fn} does not exist`);
-    return null;
+const OPS_FILE = path.join('data_to_delete', 'demo_publish_ops.json');
+
+async function main() {
+  console.log("=== Geo SDK Demo: Deleting Published Entities ===\n");
+
+  if (!fs.existsSync(OPS_FILE)) {
+    console.error(`Ops file not found: ${OPS_FILE}`);
+    console.error("Run 02_publish_demo.ts first to generate it.");
+    process.exit(1);
   }
 
-  const fileContents = fs.readFileSync(filePath, 'utf-8');
-
-  try {
-    const ops = JSON.parse(fileContents);
-    console.log(`Read ${ops.length} ops from ${fn}`);
-    return ops;
-  } catch (err) {
-    console.error(`Failed to parse JSON from file ${fn}`, err);
-    return null;
-  }
-}
-
-function getPropertyIdsFromUpdateOp(ops: any[], entityId: string): string[] {
-  const updateOp = ops.find(op =>
-    op.type === "createEntity" && op.id === entityId
-  );
-
-  if (!updateOp || !Array.isArray(updateOp.values)) {
-    return [];
+  const spaceId = process.env.DEMO_SPACE_ID;
+  if (!spaceId) {
+    console.error("DEMO_SPACE_ID not set in .env");
+    process.exit(1);
   }
 
-  return updateOp.values
-    .map((value: any) => value.property)
-    .filter((propertyId: any) => propertyId !== undefined && propertyId !== null);
-}
+  const raw = JSON.parse(fs.readFileSync(OPS_FILE, 'utf-8'));
 
+  // Collect unique entity IDs from all createEntity ops (top-level entities only)
+  const entityIds: string[] = [
+    ...new Set<string>(
+      raw
+        .filter((op: any) => op.type === "createEntity")
+        .map((op: any) => op.id as string)
+    )
+  ];
 
-const del_ops: Array<Op> = [];
-let addOps;
+  if (entityIds.length === 0) {
+    console.log("No entities found in ops file — nothing to delete.");
+    return;
+  }
 
-const dir_in = "data_to_delete";
-const fn = "demo_publish_ops.txt";
-const ops = readOpsFromFile(dir_in, fn);
+  console.log(`Found ${entityIds.length} entities to delete:\n`);
+  for (const id of entityIds) {
+    console.log(`  ${id}`);
+  }
+  console.log();
 
-const updateEntityIds = ops
-  .filter((op: any) => op.type === "createEntity")
-  .map((op: any) => op.id);
-
-const uniqueEntityIds: any[] = [...new Set(updateEntityIds)];
-
-for (const entityId of uniqueEntityIds) {
-    const properties = getPropertyIdsFromUpdateOp(ops, entityId);
-    if (properties.length > 0) {
-        addOps = Graph.updateEntity({
-            id: entityId,
-            unset: properties.map(p => ({ property: p }))
-        });
-        del_ops.push(...addOps.ops);
+  for (const entityId of entityIds) {
+    console.log(`\n──────────────────────────────────────────`);
+    console.log(`Deleting entity: ${entityId}`);
+    try {
+      await deleteEntity(entityId, spaceId);
+    } catch (err: any) {
+      console.error(`  Failed to delete ${entityId}: ${err.message}`);
     }
+  }
+
+  console.log("\n=== Delete Demo Complete ===");
 }
 
-const createRelationIds = ops
-  .filter((op: any) => op.type === "createRelation")
-  .map((op: any) => op.id);
-
-const uniqueRelationIds: any[] = [...new Set(createRelationIds)];
-
-for (const relationId of uniqueRelationIds) {
-    addOps = Graph.deleteRelation({id: relationId});
-    del_ops.push(...addOps.ops);
-}
-
-printOps(del_ops, dir_in, "delete_ops_output.txt")
-
-const txHash = await publishOps(del_ops, "Demo: delete sample entities");
+main().catch((err) => {
+  console.error("Error:", err);
+  process.exit(1);
+});

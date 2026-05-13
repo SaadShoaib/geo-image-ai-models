@@ -5,7 +5,7 @@
     "web_url": "https://chat.openai.com",
     "date_founded": "2025-03-01",
     "topics": ["AI Tools"],
-    "avatar_url": "https://openai.com/brand/",
+    "avatar_url": "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg",
     "blocks": [
       "## Overview",
       "ChatGPT is a general-purpose conversational AI tool from OpenAI.",
@@ -145,7 +145,7 @@
     "web_url": "https://leonardo.ai",
     "date_founded": "2023-01-01",
     "topics": ["AI Tools"],
-    "avatar_url": "https://leonardo.ai/images/leonardo_wordmark.svg?dpl=dpl_4PtAV7NbdN34Z4qfLmoGBLeHNtUy",
+    "avatar_url": "https://leonardo.ai/images/leonardo_wordmark.svg",
     "blocks": [
       "## Overview",
       "Leonardo.ai focuses on high-quality, stylized image generation for creators and developers.",
@@ -165,7 +165,7 @@
     "web_url": "https://fluximageai.com",
     "date_founded": "2024-08-01",
     "topics": ["AI Tools"],
-    "avatar_url": "https://bfl.ai/favicon.ico",
+    "avatar_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Black_Forest_Labs_logo.svg/1280px-Black_Forest_Labs_logo.svg.png",
     "blocks": [
       "## Overview",
       "Flux is an AI image-generation tool family created by Black Forest Labs.",
@@ -185,7 +185,7 @@
     "web_url": "https://www.imagine.art/ai-image-generator/",
     "date_founded": "2024-01-01",
     "topics": ["AI Tools"],
-    "avatar_url": "https://www.imagine.art/favicon.ico",
+    "avatar_url": "https://www.imagine.art/og-image.jpg",
     "blocks": [
       "## Overview",
       "Imagine Art provides AI-powered image generation tools for creators.",

@@ -12,28 +12,40 @@
  * Prerequisites:
  *   - Set DEMO_SPACE_ID in .env to the space you want to publish to
  *   - Set PK_SW to the private key of your smart wallet
+ *
+ * Re-run safety:
+ *   Entity IDs are derived deterministically from the ID_NAMESPACE and entity
+ *   name (using derivedUuidFromString from @geoprotocol/grc-20). Re-running
+ *   this script is idempotent — CreateEntity is an upsert per GRC-20 spec §3.2.
  */
 
 import * as fs from "fs";
 import dotenv from "dotenv";
-import { Graph, Position, type Op, ContentIds } from "@geoprotocol/geo-sdk";
+import { Ops, Position, type Op, ContentIds, GeoTestnetConfig, createGeoClient } from "@geoprotocol/geo-sdk";
+import { derivedUuidFromString, formatId } from "@geoprotocol/grc-20/util";
 import { printOps, publishOps } from "./src/functions";
-import { TYPES, PROPERTIES, QUERY_DATA_SOURCE, COLLECTION_DATA_SOURCE, VIEWS } from "./src/constants";
+import { TYPES, PROPERTIES, ID_NAMESPACE } from "./src/constants";
 
 dotenv.config();
 
-// ─── Property Registry ──────────────────────────────────────────────────────
+// ─── Stable ID Helper ────────────────────────────────────────────────────────
+// Derives a deterministic 32-char hex entity ID from a namespace + name.
+// Same inputs always produce the same ID, making re-runs fully idempotent.
+
+function stableId(type: string, name: string): string {
+  return formatId(derivedUuidFromString(`${ID_NAMESPACE}:${type}:${name}`));
+}
+
+// ─── Property Registry ───────────────────────────────────────────────────────
 // Maps JSON field names to their property ID and value type.
-// To add a new property, just add an entry here — no other code changes needed.
+// To add a new property for future bounties, add an entry here only.
 
 const VALUE_PROPERTIES: Record<string, { id: string; type: "text" | "date" }> = {
   web_url:      { id: PROPERTIES.web_url,      type: "text" },
   birth_date:   { id: PROPERTIES.birth_date,   type: "date" },
-  date_founded: { id: PROPERTIES.date_founded,  type: "date" },
+  date_founded: { id: PROPERTIES.date_founded, type: "date" },
 };
 
-// Build a values array from any entity data object using the registry above.
-// Date values should be RFC 3339 strings (e.g. "2023-01-01") — the SDK parses them internally.
 function extractValues(data: Record<string, any>) {
   const values: any[] = [];
   for (const [field, meta] of Object.entries(VALUE_PROPERTIES)) {
@@ -44,7 +56,7 @@ function extractValues(data: Record<string, any>) {
   return values;
 }
 
-// ─── JSON Data Types ─────────────────────────────────────────────────────────
+// ─── JSON Data Types ──────────────────────────────────────────────────────────
 
 type TopicData = {
   name: string;
@@ -92,13 +104,14 @@ async function main() {
   const allOps: Op[] = [];
 
   // ── Step 2: Create Topic entities ───────────────────────────────────────
-  // Topics have no dependencies, so we create them first.
   console.log("Step 2: Creating Topic entities...");
 
   const topicIdsByName: Record<string, string> = {};
 
   for (const topic of topics) {
-    const { id, ops } = Graph.createEntity({
+    const id = stableId("topic", topic.name);
+    const { ops } = Ops.entities.create({
+      id,
       name: topic.name,
       description: topic.description,
       types: [TYPES.topic],
@@ -110,15 +123,14 @@ async function main() {
   }
 
   // ── Step 3: Create Person entities ──────────────────────────────────────
-  // People can have relations to Topics.
   console.log("\nStep 3: Creating Person entities...");
 
   const personIdsByName: Record<string, string> = {};
 
   for (const person of people) {
     const values = extractValues(person);
+    const id = stableId("person", person.name);
 
-    // Build topic relations
     const topicRelations = (person.topics || [])
       .filter((t) => topicIdsByName[t])
       .map((t) => ({ toEntity: topicIdsByName[t] }));
@@ -128,7 +140,8 @@ async function main() {
       relations[PROPERTIES.topics] = topicRelations;
     }
 
-    const { id, ops } = Graph.createEntity({
+    const { ops } = Ops.entities.create({
+      id,
       name: person.name,
       description: person.description,
       types: [TYPES.person],
@@ -142,13 +155,13 @@ async function main() {
   }
 
   // ── Step 4: Create Project entities ─────────────────────────────────────
-  // Projects can have a date_founded and relations to Topics.
   console.log("\nStep 4: Creating Project entities...");
 
   const projectIdsByName: Record<string, string> = {};
 
   for (const project of projects) {
     const values = extractValues(project);
+    const id = stableId("project", project.name);
 
     const topicRelations = (project.topics || [])
       .filter((t) => topicIdsByName[t])
@@ -159,7 +172,8 @@ async function main() {
       relations[PROPERTIES.topics] = topicRelations;
     }
 
-    const { id, ops } = Graph.createEntity({
+    const { ops } = Ops.entities.create({
+      id,
       name: project.name,
       description: project.description,
       types: [TYPES.project],
@@ -174,22 +188,10 @@ async function main() {
 
   // ── Step 5: Add Text Blocks to entities that have them ─────────────────
   // Blocks are standalone entities attached to a parent via the Blocks
-  // relation. Each relation carries a `position` string for ordering
-  // (fractional indexing — positions sort lexicographically).
-  //
-  // Each line of content is its own Text Block entity:
-  //   - type:  Text Block  (76474f2f…)
-  //   - value: Markdown content  (e3e363d1…)  →  a single line / paragraph
-  //
-  // Every block gets its own Blocks relation from the parent entity,
-  // with a `position` string that controls rendering order.
-  // Position.generateBetween(after, null) produces a position that sorts
-  // after the given one.  We track the last position per entity so every
-  // block (text blocks first, then data blocks) is ordered correctly.
+  // relation. Each relation carries a `position` string for ordering.
   console.log("\nStep 5: Adding Text Blocks from JSON data...");
 
   const lastPosByEntity: Record<string, string> = {};
-  let pos: string;
 
   for (const project of projects) {
     if (!project.blocks || project.blocks.length === 0) continue;
@@ -197,8 +199,13 @@ async function main() {
     const parentId = projectIdsByName[project.name];
     console.log(`  Adding ${project.blocks.length} text blocks to "${project.name}"...`);
 
-    for (const line of project.blocks) {
-      const { id: blockId, ops: blockOps } = Graph.createEntity({
+    for (let i = 0; i < project.blocks.length; i++) {
+      const line = project.blocks[i];
+      // Stable block IDs: scoped to parent + block index so they're deterministic
+      const blockId = stableId("text-block", `${project.name}:${i}`);
+
+      const { ops: blockOps } = Ops.entities.create({
+        id: blockId,
         types: [TYPES.text_block],
         values: [
           {
@@ -210,9 +217,10 @@ async function main() {
       });
       allOps.push(...blockOps);
 
-      pos = Position.generateBetween(lastPosByEntity[parentId] ?? null, null);
+      const pos = Position.generateBetween(lastPosByEntity[parentId] ?? null, null);
       lastPosByEntity[parentId] = pos;
-      const { ops: relOps } = Graph.createRelation({
+
+      const { ops: relOps } = Ops.relations.create({
         fromEntity: parentId,
         toEntity: blockId,
         type: PROPERTIES.blocks,
@@ -225,10 +233,10 @@ async function main() {
     }
   }
 
-  // ── 5b: Avatar Images ────────────────────────────────────────────────
-  // Graph.createImage() fetches the image, uploads it to IPFS, and returns
-  // an Image entity with the IPFS URL, width, and height set automatically.
-  // The entity's type is automatically set to Image (ba4e4146…).
+  // ── 5b: Avatar Images ────────────────────────────────────────────────────
+  // createGeoClient().images.create() fetches the image, uploads to IPFS,
+  // and returns an Image entity with the IPFS URL, width, and height set.
+  const geo = createGeoClient({ network: GeoTestnetConfig });
 
   for (const project of projects) {
     if (!project.avatar_url) continue;
@@ -236,15 +244,14 @@ async function main() {
     const parentId = projectIdsByName[project.name];
     console.log(`\n  Uploading avatar for "${project.name}" to IPFS...`);
 
-    const { id: imageId, ops: imageOps, cid: imageCid } = await Graph.createImage({
+    const { id: imageId, ops: imageOps, cid: imageCid } = await geo.images.create({
       url: project.avatar_url,
       name: `${project.name} Avatar`,
-      network: "TESTNET",
     });
     allOps.push(...imageOps);
     console.log(`  Created image entity: ${imageId} (IPFS CID: ${imageCid})`);
 
-    const { ops: attachImageOps } = Graph.createRelation({
+    const { ops: attachImageOps } = Ops.relations.create({
       fromEntity: parentId,
       toEntity: imageId,
       type: ContentIds.AVATAR_PROPERTY,
@@ -253,12 +260,9 @@ async function main() {
     console.log(`  Attached image as avatar`);
   }
 
-  // Step 6 (Data Blocks) is skipped for this run.
-
-  // ── Step 7: Summary ───────────────────────────────────────────────────────
+  // ── Step 6: Summary ───────────────────────────────────────────────────────
   console.log(`\n--- Summary ---`);
   console.log(`Total operations generated: ${allOps.length}`);
-  console.log(`Operation breakdown:`);
 
   const opCounts: Record<string, number> = {};
   for (const op of allOps) {
@@ -268,13 +272,12 @@ async function main() {
     console.log(`  ${type}: ${count}`);
   }
 
-  // ── Step 8: Publish ───────────────────────────────────────────────────────
-  console.log("\nStep 8: Publishing to the Geo knowledge graph...");
-  printOps(allOps, "data_to_delete", "demo_publish_ops.txt")
+  // ── Step 7: Publish ───────────────────────────────────────────────────────
+  console.log("\nStep 7: Publishing to the Geo knowledge graph...");
+  printOps(allOps, "data_to_delete", "demo_publish_ops.json");
   const txHash = await publishOps(allOps, "Demo: publish sample entities");
   console.log(`\nDone! Transaction: ${txHash}`);
 
-  // ── Step 9: How to verify ─────────────────────────────────────────────────
   const spaceId = process.env.DEMO_SPACE_ID;
   console.log(`\nVerify your entities at:`);
   console.log(`  https://geobrowser.io/space/${spaceId}`);

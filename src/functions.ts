@@ -2,6 +2,7 @@ import {
   daoSpace,
   getSmartAccountWalletClient,
   personalSpace,
+  TESTNET_RPC_URL,
   type Op,
 } from "@geoprotocol/geo-sdk";
 import dotenv from "dotenv";
@@ -9,10 +10,6 @@ import * as fs from "fs";
 import path from "node:path";
 
 dotenv.config();
-
-// ─── Configuration ───────────────────────────────────────────────────────────
-
-const TESTNET_RPC_URL = "https://rpc-geo-test-zc16z3tcvf.t.conduit.xyz";
 
 // ─── GraphQL Helper ──────────────────────────────────────────────────────────
 
@@ -43,27 +40,23 @@ export async function gql(query: string, variables?: Record<string, any>) {
 // resolved by matching SW_ADDRESS against the DAO's members or editors list.
 
 export async function publishOps(ops: Op[], editName: string, input_space?: string) {
-  let spaceId = process.env.DEMO_SPACE_ID; 
-  if (input_space) {
-    spaceId = input_space
-  }
+  const spaceId = input_space ?? process.env.DEMO_SPACE_ID;
   if (!spaceId) throw new Error("DEMO_SPACE_ID not set in .env");
 
   const privateKey = process.env.PK_SW as `0x${string}`;
   if (!privateKey) throw new Error("PK_SW not set in .env");
 
   const client = await getSmartAccountWalletClient({
-    privateKey: privateKey,
+    privateKey,
     rpcUrl: TESTNET_RPC_URL,
   });
-  const author = client.account.address
+
+  const author = client.account?.address;
+  if (!author) throw new Error("Smart Wallet address not found from private key.");
 
   const personalSpaceData = await gql(`{
     spaces(filter: { address: { is: "${author}" } }) { id type }
   }`);
-  
-  if (!author)
-    throw new Error("Smart Wallet address not found from private key.");
 
   console.log(`\nQuerying space ${spaceId} from the API...`);
 
@@ -90,7 +83,7 @@ export async function publishOps(ops: Op[], editName: string, input_space?: stri
       name: editName,
       spaceId,
       ops,
-      author: spaceId, // this is the spaceId of the personal space
+      author: spaceId,
       network: "TESTNET",
     });
     console.log("CID:", result.cid);
@@ -99,7 +92,6 @@ export async function publishOps(ops: Op[], editName: string, input_space?: stri
     calldata = result.calldata;
   } else {
     // Resolve the caller's wallet address to their personal space ID
-    
     const callerSpace = personalSpaceData.spaces?.find(
       (s: any) => s.type === "PERSONAL",
     );
@@ -113,12 +105,9 @@ export async function publishOps(ops: Op[], editName: string, input_space?: stri
     console.log(`  Caller personal space: ${callerSpaceId}`);
 
     // Verify the caller's personal space is a member or editor of the DAO
-    const members: Array<{ memberSpaceId: string }> =
-      spaceData.space.membersList;
-    const editors: Array<{ memberSpaceId: string }> =
-      spaceData.space.editorsList;
-    const allCandidates = [...members, ...editors];
-    const isMemberOrEditor = allCandidates.some(
+    const members: Array<{ memberSpaceId: string }> = spaceData.space.membersList;
+    const editors: Array<{ memberSpaceId: string }> = spaceData.space.editorsList;
+    const isMemberOrEditor = [...members, ...editors].some(
       (m) => m.memberSpaceId === callerSpaceId,
     );
 
@@ -134,7 +123,6 @@ export async function publishOps(ops: Op[], editName: string, input_space?: stri
       name: editName,
       ops,
       author: callerSpaceId,
-      network: "TESTNET",
       callerSpaceId: `0x${callerSpaceId}` as `0x${string}`,
       daoSpaceId: `0x${spaceId}` as `0x${string}`,
       daoSpaceAddress: daoAddress as `0x${string}`,
@@ -177,9 +165,7 @@ function convertUuidBytes(obj: any): any {
   if (typeof obj !== "object") {
     if (
       typeof obj === "string" &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        obj,
-      )
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(obj)
     ) {
       return obj.replace(/-/g, "");
     }
@@ -202,7 +188,6 @@ export function printOps(ops: any, outputDir: string, fn: string) {
   console.log("NUMBER OF OPS: ", ops.length);
 
   if (ops.length > 0) {
-    // Ensure output directory exists before writing
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
