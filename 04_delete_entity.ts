@@ -70,7 +70,8 @@ export async function deleteEntity(entityId: string, spaceId: string) {
 
 // ─── Example usage ──────────────────────────────────────────────────────────
 // Replace these with the entity and space you want to clean up:
-const entityId = 'REPLACE_WITH_ENTITY_ID';
-const spaceId = 'REPLACE_WITH_SPACE_ID';
-
-await deleteEntity(entityId, spaceId);
+if (import.meta.main) {
+  const entityId = 'REPLACE_WITH_ENTITY_ID';
+  const spaceId = 'REPLACE_WITH_SPACE_ID';
+  await deleteEntity(entityId, spaceId);
+}

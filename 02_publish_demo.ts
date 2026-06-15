@@ -244,20 +244,24 @@ async function main() {
     const parentId = projectIdsByName[project.name];
     console.log(`\n  Uploading avatar for "${project.name}" to IPFS...`);
 
-    const { id: imageId, ops: imageOps, cid: imageCid } = await geo.images.create({
-      url: project.avatar_url,
-      name: `${project.name} Avatar`,
-    });
-    allOps.push(...imageOps);
-    console.log(`  Created image entity: ${imageId} (IPFS CID: ${imageCid})`);
+    try {
+      const { id: imageId, ops: imageOps, cid: imageCid } = await geo.images.create({
+        url: project.avatar_url,
+        name: `${project.name} Avatar`,
+      });
+      allOps.push(...imageOps);
+      console.log(`  Created image entity: ${imageId} (IPFS CID: ${imageCid})`);
 
-    const { ops: attachImageOps } = Ops.relations.create({
-      fromEntity: parentId,
-      toEntity: imageId,
-      type: ContentIds.AVATAR_PROPERTY,
-    });
-    allOps.push(...attachImageOps);
-    console.log(`  Attached image as avatar`);
+      const { ops: attachImageOps } = Ops.relations.create({
+        fromEntity: parentId,
+        toEntity: imageId,
+        type: ContentIds.AVATAR_PROPERTY,
+      });
+      allOps.push(...attachImageOps);
+      console.log(`  Attached image as avatar`);
+    } catch (err: any) {
+      console.warn(`  Skipping avatar for "${project.name}": ${err.message}`);
+    }
   }
 
   // ── Step 6: Summary ───────────────────────────────────────────────────────

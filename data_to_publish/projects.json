@@ -165,7 +165,7 @@
     "web_url": "https://fluximageai.com",
     "date_founded": "2024-08-01",
     "topics": ["AI Tools"],
-    "avatar_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Black_Forest_Labs_logo.svg/1280px-Black_Forest_Labs_logo.svg.png",
+    "avatar_url": "https://bfl.ai/brand/logotype-black.png",
     "blocks": [
       "## Overview",
       "Flux is an AI image-generation tool family created by Black Forest Labs.",
@@ -185,7 +185,7 @@
     "web_url": "https://www.imagine.art/ai-image-generator/",
     "date_founded": "2024-01-01",
     "topics": ["AI Tools"],
-    "avatar_url": "https://www.imagine.art/og-image.jpg",
+    "avatar_url": "https://cdn-imagine.vyro.ai/imagine-dashboard/assets/images/link-assets/og.png",
     "blocks": [
       "## Overview",
       "Imagine Art provides AI-powered image generation tools for creators.",
